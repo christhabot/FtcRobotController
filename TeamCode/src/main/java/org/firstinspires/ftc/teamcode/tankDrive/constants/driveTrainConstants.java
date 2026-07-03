@@ -19,7 +19,7 @@ public class driveTrainConstants {
     public static final double ACCELERATOR_TIME = 0.1;
 
 
-    public static final boolean DRIVE_TYPE = true;
+    public static final boolean DRIVE_TYPE = false;
     // false: pov drive - left stick controls forwards/backwards, right stick controls left/right
     // true: arcade drive - left stick controls forwards backwards left and right
 
