@@ -11,25 +11,25 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-import org.firstinspires.ftc.teamcode.tankDrive.constants;
-import org.firstinspires.ftc.teamcode.tankDrive.helper.slewRateLimiter;
+import static org.firstinspires.ftc.teamcode.tankDrive.constants.driveTrainConstants.*;
+import org.firstinspires.ftc.teamcode.tankDrive.helper.accelerator;
 import org.firstinspires.ftc.teamcode.tankDrive.helper.inputShaper;
 
 public class driveTrain {
     private final DcMotor leftMotor, rightMotor;
     private final Telemetry telemetry;
     private IMU imu;
-    private final slewRateLimiter leftLimiter, rightLimiter;
+    private final accelerator leftLimiter, rightLimiter;
 
     public driveTrain(HardwareMap hardwareMap, Telemetry telemetry) {
-        leftMotor = hardwareMap.get(DcMotor.class, constants.LEFT_MOTOR_NAME);
-        rightMotor = hardwareMap.get(DcMotor.class, constants.RIGHT_MOTOR_NAME);
-        leftMotor.setDirection(constants.LEFT_MOTOR_DIRECTION);
-        rightMotor.setDirection(constants.RIGHT_MOTOR_DIRECTION);
+        leftMotor = hardwareMap.get(DcMotor.class, LEFT_MOTOR_NAME);
+        rightMotor = hardwareMap.get(DcMotor.class, RIGHT_MOTOR_NAME);
+        leftMotor.setDirection(LEFT_MOTOR_DIRECTION);
+        rightMotor.setDirection(RIGHT_MOTOR_DIRECTION);
         this.telemetry = telemetry;
-        leftLimiter = new slewRateLimiter();
-        rightLimiter = new slewRateLimiter();
-        if(constants.FIELD_ORIENTED) {
+        leftLimiter = new accelerator();
+        rightLimiter = new accelerator();
+        if(FIELD_ORIENTED) {
             imu = hardwareMap.get(IMU.class, "imu");
 
             RevHubOrientationOnRobot.LogoFacingDirection logoDirection =
@@ -47,24 +47,24 @@ public class driveTrain {
 
     public void loop(Gamepad gamepad, double runtime) {
         double forward = gamepad.left_stick_y;
-        double turn = constants.DRIVE_TYPE ? gamepad.left_stick_x : gamepad.right_stick_x;
+        double turn = DRIVE_TYPE ? gamepad.left_stick_x : gamepad.right_stick_x;
         turn = -turn;
         telemetry.addData("joystick y", forward);
         telemetry.addData("joystick x", turn);
 
-        if(constants.DO_DEADZONE) {
-            if(abs(forward) < constants.DEADZONE_SIZE) forward = 0;
-            if(abs(turn) < constants.DEADZONE_SIZE) turn = 0;
+        if(DO_DEADZONE) {
+            if(abs(forward) < DEADZONE_SIZE) forward = 0;
+            if(abs(turn) < DEADZONE_SIZE) turn = 0;
         }
 
-        if(constants.INPUT_SHAPING) {
+        if(INPUT_SHAPING) {
             forward = inputShaper.shape(forward);
             turn = inputShaper.shape(turn);
             telemetry.addData("input shaped y", forward);
             telemetry.addData("input shaped x", turn);
         }
 
-        if(constants.FIELD_ORIENTED) {
+        if(FIELD_ORIENTED) {
             double theta = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
             telemetry.addData("theta", theta);
 
@@ -90,26 +90,27 @@ public class driveTrain {
 
         // TODO: replace max limits with linear transforming
         double big = 1.0;
-        if(constants.TRIGGER_BOOST && constants.TRIGGER_SLOWDOWN) {
-            double neutral = 1 - constants.BOOST_TRIGGER_LENGTH;
-            double add = gamepad.right_trigger * (1 - constants.BOOST_TRIGGER_LENGTH);
-            double reduce = gamepad.left_trigger * (1 - constants.BOOST_TRIGGER_LENGTH - constants.SLOWDOWN_TRIGGER_DISTANCE);
+        if(TRIGGER_BOOST && TRIGGER_SLOWDOWN) {
+            double neutral = 1 - BOOST_TRIGGER_LENGTH;
+            double add = gamepad.right_trigger * (1 - BOOST_TRIGGER_LENGTH);
+            double reduce = gamepad.left_trigger * (1 - BOOST_TRIGGER_LENGTH - SLOWDOWN_TRIGGER_DISTANCE);
             big = neutral + add - reduce;
         }
-        else if(constants.TRIGGER_BOOST) {
-            big = (1 - constants.BOOST_TRIGGER_LENGTH) + constants.BOOST_TRIGGER_LENGTH * gamepad.right_trigger;
+        else if(TRIGGER_BOOST) {
+            big = (1 - BOOST_TRIGGER_LENGTH) + BOOST_TRIGGER_LENGTH * gamepad.right_trigger;
         }
-        else if(constants.TRIGGER_SLOWDOWN) {
+        else if(TRIGGER_SLOWDOWN) {
             double neutral = 1.0;
-            double range = neutral - constants.SLOWDOWN_TRIGGER_DISTANCE;
+            double range = neutral - SLOWDOWN_TRIGGER_DISTANCE;
             big = neutral - range * gamepad.left_trigger;
         }
-        big = Math.min(constants.MAX_MOTOR_POWER, Math.abs(big));
+        big = Math.min(MAX_MOTOR_POWER, Math.abs(big));
+        telemetry.addData("max drive speed", big);
         left = Math.max(-big, Math.min(big, left));
         right = Math.max(-big, Math.min(big, right));
 
 
-        if(constants.SLEW_RATE_LIMITING) {
+        if(ACCELERATOR) {
             left = leftLimiter.shape(left, runtime);
             right = rightLimiter.shape(right, runtime);
         }
