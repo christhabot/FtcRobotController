@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.legacy;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -26,6 +27,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  * Έχουν προστεθεί εκπαιδευτικά σχόλια στα Ελληνικά.
  * ============================================================================
  */
+@Disabled
 @TeleOp(name = "Robot: Gavriil Karpathios Mecanum Drive Test", group = "Tests")
 public class fieldOrientedMechanum extends OpMode {
 

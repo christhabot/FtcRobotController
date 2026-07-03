@@ -46,8 +46,9 @@ public class driveTrain {
     }
 
     public void loop(Gamepad gamepad, double runtime) {
-        double forward = -gamepad.left_stick_y;
+        double forward = gamepad.left_stick_y;
         double turn = constants.DRIVE_TYPE ? gamepad.left_stick_x : gamepad.right_stick_x;
+        turn = -turn;
         telemetry.addData("joystick y", forward);
         telemetry.addData("joystick x", turn);
 
@@ -73,8 +74,8 @@ public class driveTrain {
             double xField = turn * cos + forward * sin;
             double yField = -turn * sin + forward * cos;
 
-            turn = -xField;
-            forward = -yField;
+            turn = xField;
+            forward = yField;
 
             telemetry.addData("field oriented y", forward);
             telemetry.addData("field oriented x", turn);
