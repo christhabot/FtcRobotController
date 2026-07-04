@@ -14,12 +14,14 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import static org.firstinspires.ftc.teamcode.tankDrive.constants.driveTrainConstants.*;
 import org.firstinspires.ftc.teamcode.tankDrive.helper.accelerator;
 import org.firstinspires.ftc.teamcode.tankDrive.helper.inputShaper;
+import org.firstinspires.ftc.teamcode.tankDrive.helper.motorBiasCompensation;
 
 public class driveTrain {
     private final DcMotor leftMotor, rightMotor;
     private final Telemetry telemetry;
     private IMU imu;
     private final accelerator leftLimiter, rightLimiter;
+    private final motorBiasCompensation compensator;
 
     public driveTrain(HardwareMap hardwareMap, Telemetry telemetry) {
         leftMotor = hardwareMap.get(DcMotor.class, LEFT_MOTOR_NAME);
@@ -29,25 +31,25 @@ public class driveTrain {
         this.telemetry = telemetry;
         leftLimiter = new accelerator();
         rightLimiter = new accelerator();
-        if(FIELD_ORIENTED) {
-            imu = hardwareMap.get(IMU.class, "imu");
+        imu = hardwareMap.get(IMU.class, "imu");
 
-            RevHubOrientationOnRobot.LogoFacingDirection logoDirection =
-                    RevHubOrientationOnRobot.LogoFacingDirection.UP;
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection =
+                RevHubOrientationOnRobot.LogoFacingDirection.UP;
 
-            RevHubOrientationOnRobot.UsbFacingDirection usbDirection =
-                    RevHubOrientationOnRobot.UsbFacingDirection.LEFT;
+        RevHubOrientationOnRobot.UsbFacingDirection usbDirection =
+                RevHubOrientationOnRobot.UsbFacingDirection.LEFT;
 
-            RevHubOrientationOnRobot orientationOnRobot =
-                    new RevHubOrientationOnRobot(logoDirection, usbDirection);
+        RevHubOrientationOnRobot orientationOnRobot =
+                new RevHubOrientationOnRobot(logoDirection, usbDirection);
 
-            imu.initialize(new IMU.Parameters(orientationOnRobot));
-        }
+        imu.initialize(new IMU.Parameters(orientationOnRobot));
+        compensator = new motorBiasCompensation(imu, telemetry);
     }
 
     public void loop(Gamepad gamepad, double runtime) {
-        double forward = -gamepad.left_stick_y;
+        double forward = gamepad.left_stick_y;
         double turn = DRIVE_TYPE ? gamepad.left_stick_x : gamepad.right_stick_x;
+        turn = -turn;
         telemetry.addData("joystick y", forward);
         telemetry.addData("joystick x", turn);
 
@@ -76,8 +78,17 @@ public class driveTrain {
             turn = xField;
             forward = yField;
 
+            telemetry.addData("imu", theta);
             telemetry.addData("field oriented y", forward);
             telemetry.addData("field oriented x", turn);
+        }
+        else if(MOTOR_BIAS_COMPENSATION) {
+            double[] result = compensator.compensate(turn, forward);
+            turn = result[0];
+            forward = result[1];
+
+            telemetry.addData("compensated y", forward);
+            telemetry.addData("compensated x", turn);
         }
 
         double leftPower = forward + turn;
@@ -87,7 +98,6 @@ public class driveTrain {
         double left = leftPower / max;
         double right = rightPower / max;
 
-        // TODO: replace max limits with linear transforming
         double big = 1.0;
         if(TRIGGER_BOOST && TRIGGER_SLOWDOWN) {
             double neutral = 1 - BOOST_TRIGGER_LENGTH;
@@ -105,14 +115,17 @@ public class driveTrain {
         }
         big = Math.min(MAX_MOTOR_POWER, Math.abs(big));
         telemetry.addData("max drive speed", big);
-        left = Math.max(-big, Math.min(big, left));
-        right = Math.max(-big, Math.min(big, right));
 
+        left *= big;
+        right *= big;
 
         if(ACCELERATOR) {
             left = leftLimiter.shape(left, runtime);
             right = rightLimiter.shape(right, runtime);
         }
+
+        // right *= 0.8; // systematic motor error simulation
+
         leftMotor.setPower(left);
         rightMotor.setPower(right);
         telemetry.addData("left power", left);
