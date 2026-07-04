@@ -27,7 +27,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  * Έχουν προστεθεί εκπαιδευτικά σχόλια στα Ελληνικά.
  * ============================================================================
  */
-@Disabled
 @TeleOp(name = "Robot: Gavriil Karpathios Mecanum Drive Test", group = "Tests")
 public class fieldOrientedMechanum extends OpMode {
 

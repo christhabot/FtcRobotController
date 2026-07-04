@@ -9,7 +9,7 @@ public class climberConstants {
 
     public static final double MOTOR_POWER = 0.6;
 
-    public static final boolean SECOND_GAMEPAD = true; // false: use gamepad 1, true: use gamepad 2
+    public static final boolean SECOND_GAMEPAD = false; // false: use gamepad 1, true: use gamepad 2
 
     public static final double SHAPING_DURATION = 1.0; // how many seconds to reach max speed
 }
