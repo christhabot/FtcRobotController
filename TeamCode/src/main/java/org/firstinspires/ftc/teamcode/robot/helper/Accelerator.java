@@ -1,14 +1,14 @@
-package org.firstinspires.ftc.teamcode.tankDrive.helper;
+package org.firstinspires.ftc.teamcode.robot.helper;
 
-import org.firstinspires.ftc.teamcode.tankDrive.constants.driveTrainConstants;
+import org.firstinspires.ftc.teamcode.robot.constants.DriveTrainConstants;
 
-public class accelerator {
+public class Accelerator {
 
     private double prevTarget = 0.0;
     private double startRuntime = 0.0;
     private double startSpeed = 0.0;
     public double prevSpeed = 0.0;
-    public accelerator() {
+    public Accelerator() {
         reset();
     }
 
@@ -20,7 +20,7 @@ public class accelerator {
     }
 
     public double shape(double target, double runtime) {
-        return shape(target, runtime, driveTrainConstants.ACCELERATOR_TIME);
+        return shape(target, runtime, DriveTrainConstants.ACCELERATOR_TIME);
     }
 
     public double shape(double target, double runtime, double time) {

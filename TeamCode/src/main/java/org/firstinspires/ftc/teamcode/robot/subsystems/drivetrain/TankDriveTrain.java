@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.tankDrive.robot;
+package org.firstinspires.ftc.teamcode.robot.subsystems.drivetrain;
 
 import static java.lang.Math.abs;
 
@@ -11,26 +11,26 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-import static org.firstinspires.ftc.teamcode.tankDrive.constants.driveTrainConstants.*;
-import org.firstinspires.ftc.teamcode.tankDrive.helper.accelerator;
-import org.firstinspires.ftc.teamcode.tankDrive.helper.inputShaper;
-import org.firstinspires.ftc.teamcode.tankDrive.helper.motorBiasCompensation;
+import static org.firstinspires.ftc.teamcode.robot.constants.DriveTrainConstants.*;
+import org.firstinspires.ftc.teamcode.robot.helper.Accelerator;
+import org.firstinspires.ftc.teamcode.robot.helper.InputShaper;
+import org.firstinspires.ftc.teamcode.robot.helper.MotorBiasCompensation;
 
-public class driveTrain {
+public class TankDriveTrain {
     private final DcMotor leftMotor, rightMotor;
     private final Telemetry telemetry;
-    private IMU imu;
-    private final accelerator leftLimiter, rightLimiter;
-    private final motorBiasCompensation compensator;
+    private final IMU imu;
+    private final Accelerator leftAccelerator, rightAccelerator;
+    private final MotorBiasCompensation compensator;
 
-    public driveTrain(HardwareMap hardwareMap, Telemetry telemetry) {
+    public TankDriveTrain(HardwareMap hardwareMap, Telemetry telemetry) {
         leftMotor = hardwareMap.get(DcMotor.class, LEFT_MOTOR_NAME);
         rightMotor = hardwareMap.get(DcMotor.class, RIGHT_MOTOR_NAME);
         leftMotor.setDirection(LEFT_MOTOR_DIRECTION);
         rightMotor.setDirection(RIGHT_MOTOR_DIRECTION);
         this.telemetry = telemetry;
-        leftLimiter = new accelerator();
-        rightLimiter = new accelerator();
+        leftAccelerator = new Accelerator();
+        rightAccelerator = new Accelerator();
         imu = hardwareMap.get(IMU.class, "imu");
 
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection =
@@ -43,7 +43,7 @@ public class driveTrain {
                 new RevHubOrientationOnRobot(logoDirection, usbDirection);
 
         imu.initialize(new IMU.Parameters(orientationOnRobot));
-        compensator = new motorBiasCompensation(imu, telemetry);
+        compensator = new MotorBiasCompensation(imu, telemetry);
     }
 
     public void loop(Gamepad gamepad, double runtime) {
@@ -59,8 +59,8 @@ public class driveTrain {
         }
 
         if(INPUT_SHAPING) {
-            forward = inputShaper.shape(forward);
-            turn = inputShaper.shape(turn);
+            forward = InputShaper.shape(forward);
+            turn = InputShaper.shape(turn);
             telemetry.addData("input shaped y", forward);
             telemetry.addData("input shaped x", turn);
         }
@@ -120,8 +120,8 @@ public class driveTrain {
         right *= big;
 
         if(ACCELERATOR) {
-            left = leftLimiter.shape(left, runtime);
-            right = rightLimiter.shape(right, runtime);
+            left = leftAccelerator.shape(left, runtime);
+            right = rightAccelerator.shape(right, runtime);
         }
 
         // right *= 0.8; // systematic motor error simulation

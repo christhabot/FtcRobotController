@@ -1,18 +1,18 @@
-package org.firstinspires.ftc.teamcode.tankDrive.helper;
+package org.firstinspires.ftc.teamcode.robot.helper;
 
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-public class motorBiasCompensation {
+public class MotorBiasCompensation {
 
     private final IMU imu;
     private double targetHeading = 0.0;
     private boolean active = false;
     private final Telemetry telemetry;
 
-    public motorBiasCompensation(IMU imu, Telemetry telemetry) {
+    public MotorBiasCompensation(IMU imu, Telemetry telemetry) {
         this.imu = imu;
         this.telemetry = telemetry;
     }

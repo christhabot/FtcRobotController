@@ -1,8 +1,8 @@
-package org.firstinspires.ftc.teamcode.tankDrive.constants;
+package org.firstinspires.ftc.teamcode.robot.constants;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-public class driveTrainConstants {
+public class DriveTrainConstants {
     public static final double MAX_MOTOR_POWER = 1.0;
 
     public static final String LEFT_MOTOR_NAME = "left_motor";
@@ -19,22 +19,22 @@ public class driveTrainConstants {
     public static final double ACCELERATOR_TIME = 0.1;
 
 
-    public static final boolean DRIVE_TYPE = false;
+    public static final boolean DRIVE_TYPE = true;
     // false: pov drive - left stick controls forwards/backwards, right stick controls left/right
     // true: arcade drive - left stick controls forwards backwards left and right
 
-    public static final boolean TRIGGER_BOOST = true;
+    public static final boolean TRIGGER_BOOST = false;
     public static final double BOOST_TRIGGER_LENGTH = 0.4; // last x of drive is controlled by joystick
     // example: if boost trigger length is 0.4, no trigger sets max power to 0.6 (1 - 0.4),
     // full trigger sets max power to MAX_MOTOR_POWER, between values scale linearly
 
-    public static final boolean TRIGGER_SLOWDOWN  = true;
+    public static final boolean TRIGGER_SLOWDOWN  = false;
     public static final double SLOWDOWN_TRIGGER_DISTANCE = 0.3; // minimum power when trigger is fully pressed
     // example: if slowdown trigger distance is 0.3, no trigger doesn't control max power
-    // (it's controlled by boost trigger, or if disabled, max motor power
-    // full trigger sets power to 0.3, between values scale linearly
+    // (it's controlled by boost trigger, or if disabled, max motor power)
+    // full trigger sets max power to 0.3, between trigger values scale linearly
 
     public static final boolean FIELD_ORIENTED = false;
 
-    public static final boolean MOTOR_BIAS_COMPENSATION = true; // compensate for systematic/random motor error
+    public static final boolean MOTOR_BIAS_COMPENSATION = false; // compensate for systematic/random motor error
 }

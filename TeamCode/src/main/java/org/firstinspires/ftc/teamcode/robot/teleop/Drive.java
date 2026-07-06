@@ -1,18 +1,18 @@
-package org.firstinspires.ftc.teamcode.tankDrive.opmodes;
+package org.firstinspires.ftc.teamcode.robot.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import org.firstinspires.ftc.teamcode.tankDrive.robot.driveTrain;
+import org.firstinspires.ftc.teamcode.robot.subsystems.drivetrain.TankDriveTrain;
 
 @TeleOp(name = "Tank Drive Full", group = "TeleOp")
-public class drive extends LinearOpMode {
+public class Drive extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        driveTrain drivetrain = new driveTrain(hardwareMap, telemetry);
+        TankDriveTrain tankDriveTrain = new TankDriveTrain(hardwareMap, telemetry);
         waitForStart();
         while (opModeIsActive()) {
-            drivetrain.loop(gamepad1, getRuntime());
+            tankDriveTrain.loop(gamepad1, getRuntime());
             telemetry.update();
         }
     }

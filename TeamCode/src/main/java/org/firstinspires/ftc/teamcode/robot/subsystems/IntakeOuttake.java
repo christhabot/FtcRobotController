@@ -1,28 +1,28 @@
-package org.firstinspires.ftc.teamcode.tankDrive.robot;
+package org.firstinspires.ftc.teamcode.robot.subsystems;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.tankDrive.helper.accelerator;
-import static org.firstinspires.ftc.teamcode.tankDrive.constants.intakeOuttakeConstants.*;
+import org.firstinspires.ftc.teamcode.robot.helper.Accelerator;
+import static org.firstinspires.ftc.teamcode.robot.constants.IntakeOuttakeConstants.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class intakeOuttake {
+public class IntakeOuttake {
     private final DcMotor motor;
     private double direction = 0.0;
-    private final accelerator shaper;
+    private final Accelerator accelerator;
     private final Telemetry telemetry;
 
     private Method aWasPressedMethod;
 
-    public intakeOuttake(HardwareMap hardwareMap, Telemetry telemetry) {
+    public IntakeOuttake(HardwareMap hardwareMap, Telemetry telemetry) {
         motor = hardwareMap.get(DcMotor.class, MOTOR_NAME);
         motor.setDirection(MOTOR_DIRECTION);
-        shaper = new accelerator();
+        accelerator = new Accelerator();
         this.telemetry = telemetry;
         try {
             aWasPressedMethod = Gamepad.class.getMethod("aWasPressed");
@@ -58,7 +58,7 @@ public class intakeOuttake {
             curDir = -1.0;
         }
         telemetry.addData("intake outtake direction", curDir);
-        double finalDir = shaper.shape(curDir, runtime, SHAPING_DURATION);
+        double finalDir = accelerator.shape(curDir, runtime, SHAPING_DURATION);
         setDirection(finalDir * MOTOR_POWER);
         telemetry.addData("intake outtake shaped direction", finalDir);
     }
